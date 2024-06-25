@@ -94,6 +94,7 @@ class LoginScreen extends StatelessWidget {
                                       
                                     }else{
                                       Navigator.pushReplacementNamed(context, 'home');
+                                      print("object");
                                       for (var usuario in usuarios) {
                                       print(usuario.clave); // Ajusta según los campos de la clase Usuario
                                     }

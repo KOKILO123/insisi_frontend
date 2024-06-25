@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:insisi/providers/aplicacion_provider.dart';
 import 'package:insisi/providers/usuario_provider.dart';
+import 'package:insisi/providers/dashboard_provider.dart';
 import 'package:insisi/screens/home_screen.dart';
 import 'package:insisi/screens/login_screen.dart';
 import 'package:provider/provider.dart';
@@ -13,7 +15,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => UsuarioProvider())
+        ChangeNotifierProvider(create: (_) => DashboardProvider()),
+        ChangeNotifierProvider(create: (_) => UsuarioProvider()),
+        ChangeNotifierProvider(create: (_) => AplicacionProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
