@@ -3,6 +3,8 @@ import 'package:insisi/models/usuario.dart';
 import 'package:insisi/providers/usuario_provider.dart';
 import 'package:insisi/widgets/input_decoration.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -93,12 +95,20 @@ class LoginScreen extends StatelessWidget {
                                     if(usuarios.length==0){
                                       print("entraaaaaaaaaa1111");
                                     }else{
-                                      print("entraaaaaaaa2222222222222");
+                                      
+                                      // Guardar los valores de usuarios en shared_preferences
+                                      final prefs = await SharedPreferences.getInstance();
+                                      await prefs.setString('tipoUsuarioid', usuarios[0].tipoUsuarioid.toString());
+                                      await prefs.setString('usuarioNombre', usuarios[0].nombre);
+
+
                                       Navigator.pushReplacementNamed(context, 'home');
-                                      print("object");
+
+                                      //guardar aca los valores de usuarios 
+                                      
                                       for (var usuario in usuarios) {
-                                      print(usuario.clave); // Ajusta según los campos de la clase Usuario
-                                    }
+                                        print(usuario.clave); // Ajusta según los campos de la clase Usuario
+                                      }
                                     }
                                     
                                     //Navigator.pushReplacementNamed(context, 'home');

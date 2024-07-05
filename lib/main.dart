@@ -5,6 +5,7 @@ import 'package:insisi/providers/aplicacion_provider.dart';
 import 'package:insisi/providers/area_provider.dart';
 import 'package:insisi/providers/incidencia_estado_provider.dart';
 import 'package:insisi/providers/institucion_provider.dart';
+import 'package:insisi/providers/menus_provider.dart';
 import 'package:insisi/providers/prioridad_provider.dart';
 import 'package:insisi/providers/tipo_incidencia_provider.dart';
 import 'package:insisi/providers/tipo_usuario_provider.dart';
@@ -32,6 +33,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => TipoIncidenciaProvider()),
         ChangeNotifierProvider(create: (_) => TipoUsuarioProvider()),
         ChangeNotifierProvider(create: (_) => IncidenciaEstadoProvider()),
+        ChangeNotifierProvider(create: (_) => MenusProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
