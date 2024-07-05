@@ -17,12 +17,12 @@ class Usuario {
     String usuario;
     String clave;
     int estado;
-    dynamic token;
+    /*dynamic token;
     int createdAt;
     dynamic updatedAt;
     dynamic createdBy;
     dynamic updatedBy;
-    dynamic deletedBy;
+    dynamic deletedBy;*/
 
     Usuario({
         required this.usuarioId,
@@ -33,12 +33,12 @@ class Usuario {
         required this.usuario,
         required this.clave,
         required this.estado,
-         this.token,
+         /*this.token,
         required this.createdAt,
          this.updatedAt,
          this.createdBy,
          this.updatedBy,
-         this.deletedBy,
+         this.deletedBy,*/
     });
 
     factory Usuario.fromJson(Map<String, dynamic> json) => Usuario(
@@ -50,12 +50,12 @@ class Usuario {
         usuario: json["usuario"],
         clave: json["clave"],
         estado: json["estado"],
-        token: json["token"],
+        /*token: json["token"],
         createdAt: json["createdAt"],
         updatedAt: json["updatedAt"],
         createdBy: json["createdBy"],
         updatedBy: json["updatedBy"],
-        deletedBy: json["deletedBy"],
+        deletedBy: json["deletedBy"],*/
     );
 
     Map<String, dynamic> toJson() => {
@@ -67,11 +67,11 @@ class Usuario {
         "usuario": usuario,
         "clave": clave,
         "estado": estado,
-        "token": token,
+        /*"token": token,
         "createdAt": createdAt,
         "updatedAt": updatedAt,
         "createdBy": createdBy,
         "updatedBy": updatedBy,
-        "deletedBy": deletedBy,
+        "deletedBy": deletedBy,*/
     };
 }

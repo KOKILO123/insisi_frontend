@@ -1,19 +1,19 @@
-class Aplicacion {
-  final int aplicacionId;
+class Area {
+  final int areaId;
   final String nombre;
   final String descripcion;
   final int estado;
 
-  Aplicacion({
-    required this.aplicacionId,
+  Area({
+    required this.areaId,
     required this.nombre,
     required this.descripcion,
     required this.estado,
   });
 
-  factory Aplicacion.fromJson(Map<String, dynamic> json) {
-    return Aplicacion(
-      aplicacionId: json['aplicacionId'],
+  factory Area.fromJson(Map<String, dynamic> json) {
+    return Area(
+      areaId: json['areaId'],
       nombre: json['nombre'],
       descripcion: json['descripcion'],
       estado: json['estado'],

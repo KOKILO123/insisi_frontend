@@ -1,27 +1,27 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:insisi/providers/aplicacion_provider.dart';
-import 'package:insisi/models/aplicacion.dart';
+import 'package:insisi/providers/tipo_usuario_provider.dart';
+import 'package:insisi/models/tipoUsuario.dart';
 import 'package:provider/provider.dart';
 import 'package:insisi/util/colors.dart';
 
-class AplicacionesScreen extends StatefulWidget {
+class TipoUsuarioesScreen extends StatefulWidget {
   @override
-  _AplicacionesScreenState createState() => _AplicacionesScreenState();
+  _TipoUsuarioesScreenState createState() => _TipoUsuarioesScreenState();
 }
 
-class _AplicacionesScreenState extends State<AplicacionesScreen> {
+class _TipoUsuarioesScreenState extends State<TipoUsuarioesScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descripcionController = TextEditingController();
   final TextEditingController _searchController = TextEditingController();
-  List<Aplicacion> _filteredAplicaciones = [];
+  List<TipoUsuario> _filteredTipoUsuarioes = [];
   bool isSearchClicked = false;
 
   @override
   void initState() {
     super.initState();
-    final aplicacionProvider = Provider.of<AplicacionProvider>(context, listen: false);
-    aplicacionProvider.fetchAplicaciones(); // Fetch aplicaciones on init
+    final tipoUsuarioProvider = Provider.of<TipoUsuarioProvider>(context, listen: false);
+    tipoUsuarioProvider.fetchTipoUsuarioes(); // Fetch tipoUsuarioes on init
     _searchController.addListener(() {
       _onSearchChanged(_searchController.text);
     });
@@ -36,22 +36,22 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
   }
 
   void _onSearchChanged(String value) {
-    final aplicacionProvider = Provider.of<AplicacionProvider>(context, listen: false);
-    final allAplicaciones = aplicacionProvider.aplicaciones;
+    final tipoUsuarioProvider = Provider.of<TipoUsuarioProvider>(context, listen: false);
+    final allTipoUsuarioes = tipoUsuarioProvider.tipoUsuarioes;
     setState(() {
       if (value.isEmpty) {
-        _filteredAplicaciones = allAplicaciones;
+        _filteredTipoUsuarioes = allTipoUsuarioes;
       } else {
-        _filteredAplicaciones = allAplicaciones
-            .where((aplicacion) => aplicacion.nombre.toLowerCase().contains(value.toLowerCase()))
+        _filteredTipoUsuarioes = allTipoUsuarioes
+            .where((tipoUsuario) => tipoUsuario.nombre.toLowerCase().contains(value.toLowerCase()))
             .toList();
       }
     });
   }
 
-  Future<void> _delete(int aplicacionId) async {
-    final aplicacionProvider = Provider.of<AplicacionProvider>(context, listen: false);
-    final success = await aplicacionProvider.deleteAplicacion(aplicacionId);
+  Future<void> _delete(int tipoUsuarioId) async {
+    final tipoUsuarioProvider = Provider.of<TipoUsuarioProvider>(context, listen: false);
+    final success = await tipoUsuarioProvider.deleteTipoUsuario(tipoUsuarioId);
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Has eliminado correctamente un elemento")),
@@ -64,7 +64,7 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
     }
   }
 
-  Future<void> _create([Aplicacion? aplicacion]) async {
+  Future<void> _create([TipoUsuario? tipoUsuario]) async {
     await showModalBottomSheet(
       isScrollControlled: true,
       context: context,
@@ -82,7 +82,7 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
             children: [
               const Center(
                 child: Text(
-                  "Creando Aplicacion",
+                  "Creando TipoUsuario",
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -90,14 +90,14 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
                 controller: _nameController,
                 decoration: const InputDecoration(
                   labelText: 'Nombre',
-                  hintText: 'SIAF',
+                  hintText: 'Nombre',
                 ),
               ),
               TextField(
                 controller: _descripcionController,
                 decoration: const InputDecoration(
                   labelText: 'Descripcion',
-                  hintText: 'Sistema Integrado de Administracion Financiera',
+                  hintText: 'Descipcion',
                 ),
               ),
               const SizedBox(height: 10),
@@ -113,15 +113,15 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
                     final String descripcion = _descripcionController.text;
 
                     if (name.isNotEmpty && descripcion.isNotEmpty) {
-                      final newAplicacion = Aplicacion(
-                        aplicacionId: 0, // Placeholder ID, backend should generate
+                      final newTipoUsuario = TipoUsuario(
+                        tipoUsuarioId: 0, // Placeholder ID, backend should generate
                         nombre: name,
                         descripcion: descripcion,
                         estado: 1, // Default status
                       );
 
-                      final aplicacionProvider = Provider.of<AplicacionProvider>(context, listen: false);
-                      final success = await aplicacionProvider.createAplicacion(newAplicacion);
+                      final tipoUsuarioProvider = Provider.of<TipoUsuarioProvider>(context, listen: false);
+                      final success = await tipoUsuarioProvider.createTipoUsuario(newTipoUsuario);
 
                       if (success) {
                         Navigator.of(context).pop();
@@ -151,10 +151,10 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final aplicacionProvider = Provider.of<AplicacionProvider>(context);
-    final aplicaciones = _filteredAplicaciones.isEmpty && _searchController.text.isEmpty
-        ? aplicacionProvider.aplicaciones
-        : _filteredAplicaciones;
+    final tipoUsuarioProvider = Provider.of<TipoUsuarioProvider>(context);
+    final tipoUsuarioes = _filteredTipoUsuarioes.isEmpty && _searchController.text.isEmpty
+        ? tipoUsuarioProvider.tipoUsuarioes
+        : _filteredTipoUsuarioes;
 
     return Scaffold(
       backgroundColor: miColors.colorMaestroFondo,
@@ -170,7 +170,7 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
             ? Container(
                 height: 40,
                 decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 95, 226, 77),
+                  color: const Color.fromARGB(255, 39, 94, 176),
                   borderRadius: BorderRadius.circular(20.0),
                 ),
                 child: TextField(
@@ -182,7 +182,7 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
                       hintText: 'Search..'),
                 ),
               )
-            : const Text('Lista Aplicaciones'),
+            : const Text('Lista TipoUsuarioes'),
         actions: [
           IconButton(
             icon: Icon(isSearchClicked ? Icons.close : Icons.search),
@@ -198,34 +198,34 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
           ),
         ],
       ),
-      body: Consumer<AplicacionProvider>(
-        builder: (context, aplicacionProvider, child) {
+      body: Consumer<TipoUsuarioProvider>(
+        builder: (context, tipoUsuarioProvider, child) {
           return ListView.builder(
-            itemCount: aplicaciones.length,
+            itemCount: tipoUsuarioes.length,
             itemBuilder: (context, index) {
-              Aplicacion aplicacion = aplicaciones[index];
+              TipoUsuario tipoUsuario = tipoUsuarioes[index];
               return Card(
-                color: const Color.fromARGB(255, 147, 175, 76),
+                color: const Color.fromARGB(255, 39, 94, 176),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
-                margin: const EdgeInsets.all(3),
+                margin: const EdgeInsets.all(10),
                 child: ListTile(
                   title: Text(
-                    aplicacion.nombre,
+                    tipoUsuario.nombre,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
                   ),
-                  subtitle: Text(aplicacion.descripcion),
+                  subtitle: Text(tipoUsuario.descripcion),
                   trailing: SizedBox(
                     width: 60,
                     child: Row(
                       children: [
                         IconButton(
                           color: Colors.black,
-                          onPressed: () => _delete(aplicacion.aplicacionId),
+                          onPressed: () => _delete(tipoUsuario.tipoUsuarioId),
                           icon: const Icon(Icons.delete),
                         ),
                       ],

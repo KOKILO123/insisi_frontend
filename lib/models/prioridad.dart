@@ -1,19 +1,19 @@
-class Aplicacion {
-  final int aplicacionId;
+class Prioridad {
+  final int prioridadId;
   final String nombre;
   final String descripcion;
   final int estado;
 
-  Aplicacion({
-    required this.aplicacionId,
+  Prioridad({
+    required this.prioridadId,
     required this.nombre,
     required this.descripcion,
     required this.estado,
   });
 
-  factory Aplicacion.fromJson(Map<String, dynamic> json) {
-    return Aplicacion(
-      aplicacionId: json['aplicacionId'],
+  factory Prioridad.fromJson(Map<String, dynamic> json) {
+    return Prioridad(
+      prioridadId: json['prioridadId'],
       nombre: json['nombre'],
       descripcion: json['descripcion'],
       estado: json['estado'],

@@ -1,27 +1,27 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:insisi/providers/aplicacion_provider.dart';
-import 'package:insisi/models/aplicacion.dart';
+import 'package:insisi/providers/prioridad_provider.dart';
+import 'package:insisi/models/prioridad.dart';
 import 'package:provider/provider.dart';
 import 'package:insisi/util/colors.dart';
 
-class AplicacionesScreen extends StatefulWidget {
+class PrioridadesScreen extends StatefulWidget {
   @override
-  _AplicacionesScreenState createState() => _AplicacionesScreenState();
+  _PrioridadesScreenState createState() => _PrioridadesScreenState();
 }
 
-class _AplicacionesScreenState extends State<AplicacionesScreen> {
+class _PrioridadesScreenState extends State<PrioridadesScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descripcionController = TextEditingController();
   final TextEditingController _searchController = TextEditingController();
-  List<Aplicacion> _filteredAplicaciones = [];
+  List<Prioridad> _filteredPrioridades = [];
   bool isSearchClicked = false;
 
   @override
   void initState() {
     super.initState();
-    final aplicacionProvider = Provider.of<AplicacionProvider>(context, listen: false);
-    aplicacionProvider.fetchAplicaciones(); // Fetch aplicaciones on init
+    final prioridadProvider = Provider.of<PrioridadProvider>(context, listen: false);
+    prioridadProvider.fetchPrioridades(); // Fetch prioridades on init
     _searchController.addListener(() {
       _onSearchChanged(_searchController.text);
     });
@@ -36,22 +36,22 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
   }
 
   void _onSearchChanged(String value) {
-    final aplicacionProvider = Provider.of<AplicacionProvider>(context, listen: false);
-    final allAplicaciones = aplicacionProvider.aplicaciones;
+    final prioridadProvider = Provider.of<PrioridadProvider>(context, listen: false);
+    final allPrioridades = prioridadProvider.prioridades;
     setState(() {
       if (value.isEmpty) {
-        _filteredAplicaciones = allAplicaciones;
+        _filteredPrioridades = allPrioridades;
       } else {
-        _filteredAplicaciones = allAplicaciones
-            .where((aplicacion) => aplicacion.nombre.toLowerCase().contains(value.toLowerCase()))
+        _filteredPrioridades = allPrioridades
+            .where((prioridad) => prioridad.nombre.toLowerCase().contains(value.toLowerCase()))
             .toList();
       }
     });
   }
 
-  Future<void> _delete(int aplicacionId) async {
-    final aplicacionProvider = Provider.of<AplicacionProvider>(context, listen: false);
-    final success = await aplicacionProvider.deleteAplicacion(aplicacionId);
+  Future<void> _delete(int prioridadId) async {
+    final prioridadProvider = Provider.of<PrioridadProvider>(context, listen: false);
+    final success = await prioridadProvider.deletePrioridad(prioridadId);
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Has eliminado correctamente un elemento")),
@@ -64,7 +64,7 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
     }
   }
 
-  Future<void> _create([Aplicacion? aplicacion]) async {
+  Future<void> _create([Prioridad? prioridad]) async {
     await showModalBottomSheet(
       isScrollControlled: true,
       context: context,
@@ -82,7 +82,7 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
             children: [
               const Center(
                 child: Text(
-                  "Creando Aplicacion",
+                  "Creando Prioridad",
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -113,15 +113,15 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
                     final String descripcion = _descripcionController.text;
 
                     if (name.isNotEmpty && descripcion.isNotEmpty) {
-                      final newAplicacion = Aplicacion(
-                        aplicacionId: 0, // Placeholder ID, backend should generate
+                      final newPrioridad = Prioridad(
+                        prioridadId: 0, // Placeholder ID, backend should generate
                         nombre: name,
                         descripcion: descripcion,
                         estado: 1, // Default status
                       );
 
-                      final aplicacionProvider = Provider.of<AplicacionProvider>(context, listen: false);
-                      final success = await aplicacionProvider.createAplicacion(newAplicacion);
+                      final prioridadProvider = Provider.of<PrioridadProvider>(context, listen: false);
+                      final success = await prioridadProvider.createPrioridad(newPrioridad);
 
                       if (success) {
                         Navigator.of(context).pop();
@@ -151,10 +151,10 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final aplicacionProvider = Provider.of<AplicacionProvider>(context);
-    final aplicaciones = _filteredAplicaciones.isEmpty && _searchController.text.isEmpty
-        ? aplicacionProvider.aplicaciones
-        : _filteredAplicaciones;
+    final prioridadProvider = Provider.of<PrioridadProvider>(context);
+    final prioridades = _filteredPrioridades.isEmpty && _searchController.text.isEmpty
+        ? prioridadProvider.prioridades
+        : _filteredPrioridades;
 
     return Scaffold(
       backgroundColor: miColors.colorMaestroFondo,
@@ -170,7 +170,7 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
             ? Container(
                 height: 40,
                 decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 95, 226, 77),
+                  color: const Color.fromARGB(255, 176, 39, 123),
                   borderRadius: BorderRadius.circular(20.0),
                 ),
                 child: TextField(
@@ -182,7 +182,7 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
                       hintText: 'Search..'),
                 ),
               )
-            : const Text('Lista Aplicaciones'),
+            : const Text('Lista Prioridades'),
         actions: [
           IconButton(
             icon: Icon(isSearchClicked ? Icons.close : Icons.search),
@@ -198,34 +198,34 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
           ),
         ],
       ),
-      body: Consumer<AplicacionProvider>(
-        builder: (context, aplicacionProvider, child) {
+      body: Consumer<PrioridadProvider>(
+        builder: (context, prioridadProvider, child) {
           return ListView.builder(
-            itemCount: aplicaciones.length,
+            itemCount: prioridades.length,
             itemBuilder: (context, index) {
-              Aplicacion aplicacion = aplicaciones[index];
+              Prioridad prioridad = prioridades[index];
               return Card(
-                color: const Color.fromARGB(255, 147, 175, 76),
+                color: const Color.fromARGB(255, 176, 39, 123),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
                 margin: const EdgeInsets.all(3),
                 child: ListTile(
                   title: Text(
-                    aplicacion.nombre,
+                    prioridad.nombre,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
                   ),
-                  subtitle: Text(aplicacion.descripcion),
+                  subtitle: Text(prioridad.descripcion),
                   trailing: SizedBox(
                     width: 60,
                     child: Row(
                       children: [
                         IconButton(
                           color: Colors.black,
-                          onPressed: () => _delete(aplicacion.aplicacionId),
+                          onPressed: () => _delete(prioridad.prioridadId),
                           icon: const Icon(Icons.delete),
                         ),
                       ],
@@ -240,9 +240,7 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () => _create(),
         child: Icon(Icons.add),
-        //focusColor: miColors.colorMaestroFondo,
         backgroundColor: miColors.colorMaestro,
-        tooltip: "Aregar",
       ),
     );
   }

@@ -49,4 +49,74 @@ class UsuarioProvider with ChangeNotifier {
       // Manejo de errores adicional, como notificar al usuario de un fallo de red
     }
   }
+
+
+  /* ---------------------------- */
+  List<Usuario> _usuarios = [];
+
+  List<Usuario> get usuariosx => _usuarios;
+
+  Future<void> fetchUsuarios() async {
+    try {
+      final urlA = Uri.http(urlApi, 'insisi/api/usuario/list');
+      final response = await http.get(urlA);
+
+      if (response.statusCode == 200) {
+        Iterable list = json.decode(response.body);
+        _usuarios = list.map((model) => Usuario.fromJson(model)).toList();
+        notifyListeners();
+      } else {
+        throw Exception('Failed to load usuarios');
+      }
+    } catch (e) {
+      print('Error en getusuarios: $e');
+      _usuarios = [];
+      notifyListeners();
+    }
+  }
+
+  Future<bool> createUsuario(Usuario usuario) async {
+    try {
+      final urlA = Uri.http(urlApi, 'insisi/api/usuario/create');
+      final response = await http.post(
+        urlA,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(usuario.toJson()),
+      );
+
+      if (response.statusCode == 201) {
+        // Llamada síncrona para actualizar la lista de usuarios
+        await fetchUsuarios();
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print('Error en createAplicacion: $e');
+      return false;
+    }
+  }
+
+  Future<bool> deleteUsuario(int usuarioId) async {
+    try {
+      final urlA = Uri.http(urlApi, 'insisi/api/usuario/delete/$usuarioId');
+      final response = await http.delete(urlA);
+
+      if (response.statusCode == 200) {
+        _usuarios.removeWhere((aplicacion) => aplicacion.usuarioId == usuarioId);
+        notifyListeners();
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print('Error en Eliminar: $e');
+      return false;
+    }
+  }
+
+
+
 }

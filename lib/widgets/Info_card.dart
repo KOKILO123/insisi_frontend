@@ -1,6 +1,13 @@
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:insisi/screens/area_screen.dart';
+import 'package:insisi/screens/incidencia_estado_screen.dart';
+import 'package:insisi/screens/institucion_screen.dart';
+import 'package:insisi/screens/prioridad_screen.dart';
+import 'package:insisi/screens/tipo_incidencia_screen.dart';
+import 'package:insisi/screens/tipo_usuario_screen.dart';
+import 'package:insisi/screens/usuario_screen.dart';
 import '../screens/home_screen_details.dart';
 import '../screens/aplicacion_screen.dart';
 
@@ -32,7 +39,33 @@ class InfoCard extends StatelessWidget {
             context,
             MaterialPageRoute(
               //builder: (context) => DetailScreen(title: title, value: value,id:id,color:color),
-              builder: (context) => AplicacionesScreen(), // Pasa el id a AplicacionesScreen
+              //builder: (context) => AplicacionesScreen(), // Pasa el id a AplicacionesScreen
+             builder: (context) {
+              
+                switch (id) {
+                  case '1':
+                    return DetailScreen(title: title, value: value, id: id, color: color);
+                  case '2':
+                    return UsuariosScreen(); 
+                  case '3':
+                    return AplicacionesScreen(); 
+                  case '4':
+                    return AreaesScreen(); 
+                  case '5':
+                    return InstitucionesScreen();
+                  case '6':
+                    return PrioridadesScreen(); 
+                  case '7':
+                    return TipoIncidenciaesScreen();  
+                  case '8':
+                    return TipoUsuarioesScreen();   
+                  case '9':
+                    return IncidenciaEstadoesScreen();   
+                  default:
+                    return AplicacionesScreen(); // En caso de que id no coincida con ningún caso, puedes retornar una pantalla vacía o manejarlo como prefieras
+                }
+              },
+
             ),
           );
         },
@@ -45,17 +78,17 @@ class InfoCard extends StatelessWidget {
               Row(
                 children: [
                   Icon(icon, size: 40, color: Colors.white),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   Text(
                     value,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                 ],
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Text(
                 title,
-                style: TextStyle(fontSize: 24, color: Colors.white),
+                style: const TextStyle(fontSize: 24, color: Colors.white),
               ),
             ],
           ),

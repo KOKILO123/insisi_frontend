@@ -1,27 +1,28 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:insisi/providers/aplicacion_provider.dart';
-import 'package:insisi/models/aplicacion.dart';
+import 'package:insisi/providers/institucion_provider.dart';
+import 'package:insisi/models/institucion.dart';
 import 'package:provider/provider.dart';
 import 'package:insisi/util/colors.dart';
 
-class AplicacionesScreen extends StatefulWidget {
+class InstitucionesScreen extends StatefulWidget {
   @override
-  _AplicacionesScreenState createState() => _AplicacionesScreenState();
+  _InstitucionesScreenState createState() => _InstitucionesScreenState();
 }
 
-class _AplicacionesScreenState extends State<AplicacionesScreen> {
+class _InstitucionesScreenState extends State<InstitucionesScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descripcionController = TextEditingController();
+  final TextEditingController _siglaController = TextEditingController();
   final TextEditingController _searchController = TextEditingController();
-  List<Aplicacion> _filteredAplicaciones = [];
+  List<Institucion> _filteredInstituciones = [];
   bool isSearchClicked = false;
 
   @override
   void initState() {
     super.initState();
-    final aplicacionProvider = Provider.of<AplicacionProvider>(context, listen: false);
-    aplicacionProvider.fetchAplicaciones(); // Fetch aplicaciones on init
+    final institucionProvider = Provider.of<InstitucionProvider>(context, listen: false);
+    institucionProvider.fetchInstituciones(); // Fetch instituciones on init
     _searchController.addListener(() {
       _onSearchChanged(_searchController.text);
     });
@@ -36,22 +37,22 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
   }
 
   void _onSearchChanged(String value) {
-    final aplicacionProvider = Provider.of<AplicacionProvider>(context, listen: false);
-    final allAplicaciones = aplicacionProvider.aplicaciones;
+    final institucionProvider = Provider.of<InstitucionProvider>(context, listen: false);
+    final allInstituciones = institucionProvider.instituciones;
     setState(() {
       if (value.isEmpty) {
-        _filteredAplicaciones = allAplicaciones;
+        _filteredInstituciones = allInstituciones;
       } else {
-        _filteredAplicaciones = allAplicaciones
-            .where((aplicacion) => aplicacion.nombre.toLowerCase().contains(value.toLowerCase()))
+        _filteredInstituciones = allInstituciones
+            .where((institucion) => institucion.nombre.toLowerCase().contains(value.toLowerCase()))
             .toList();
       }
     });
   }
 
-  Future<void> _delete(int aplicacionId) async {
-    final aplicacionProvider = Provider.of<AplicacionProvider>(context, listen: false);
-    final success = await aplicacionProvider.deleteAplicacion(aplicacionId);
+  Future<void> _delete(int institucionId) async {
+    final institucionProvider = Provider.of<InstitucionProvider>(context, listen: false);
+    final success = await institucionProvider.deleteInstitucion(institucionId);
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Has eliminado correctamente un elemento")),
@@ -64,7 +65,7 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
     }
   }
 
-  Future<void> _create([Aplicacion? aplicacion]) async {
+  Future<void> _create([Institucion? institucion]) async {
     await showModalBottomSheet(
       isScrollControlled: true,
       context: context,
@@ -82,7 +83,7 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
             children: [
               const Center(
                 child: Text(
-                  "Creando Aplicacion",
+                  "Creando Institucion",
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -90,14 +91,21 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
                 controller: _nameController,
                 decoration: const InputDecoration(
                   labelText: 'Nombre',
-                  hintText: 'SIAF',
+                  hintText: 'Nombre',
                 ),
               ),
               TextField(
                 controller: _descripcionController,
                 decoration: const InputDecoration(
                   labelText: 'Descripcion',
-                  hintText: 'Sistema Integrado de Administracion Financiera',
+                  hintText: 'Descripcion',
+                ),
+              ),
+              TextField(
+                controller: _siglaController,
+                decoration: const InputDecoration(
+                  labelText: 'Sigla',
+                  hintText: 'Sigla',
                 ),
               ),
               const SizedBox(height: 10),
@@ -111,17 +119,19 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
                   onPressed: () async {
                     final String name = _nameController.text;
                     final String descripcion = _descripcionController.text;
+                    final String sigla = _siglaController.text;
 
                     if (name.isNotEmpty && descripcion.isNotEmpty) {
-                      final newAplicacion = Aplicacion(
-                        aplicacionId: 0, // Placeholder ID, backend should generate
+                      final newInstitucion = Institucion(
+                        institucionId: 0, // Placeholder ID, backend should generate
                         nombre: name,
                         descripcion: descripcion,
+                        sigla: sigla,
                         estado: 1, // Default status
                       );
 
-                      final aplicacionProvider = Provider.of<AplicacionProvider>(context, listen: false);
-                      final success = await aplicacionProvider.createAplicacion(newAplicacion);
+                      final institucionProvider = Provider.of<InstitucionProvider>(context, listen: false);
+                      final success = await institucionProvider.createInstitucion(newInstitucion);
 
                       if (success) {
                         Navigator.of(context).pop();
@@ -151,10 +161,10 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final aplicacionProvider = Provider.of<AplicacionProvider>(context);
-    final aplicaciones = _filteredAplicaciones.isEmpty && _searchController.text.isEmpty
-        ? aplicacionProvider.aplicaciones
-        : _filteredAplicaciones;
+    final institucionProvider = Provider.of<InstitucionProvider>(context);
+    final instituciones = _filteredInstituciones.isEmpty && _searchController.text.isEmpty
+        ? institucionProvider.instituciones
+        : _filteredInstituciones;
 
     return Scaffold(
       backgroundColor: miColors.colorMaestroFondo,
@@ -170,7 +180,7 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
             ? Container(
                 height: 40,
                 decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 95, 226, 77),
+                  color: const Color.fromARGB(255, 92, 39, 176),
                   borderRadius: BorderRadius.circular(20.0),
                 ),
                 child: TextField(
@@ -182,7 +192,7 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
                       hintText: 'Search..'),
                 ),
               )
-            : const Text('Lista Aplicaciones'),
+            : const Text('Lista Instituciones'),
         actions: [
           IconButton(
             icon: Icon(isSearchClicked ? Icons.close : Icons.search),
@@ -198,34 +208,34 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
           ),
         ],
       ),
-      body: Consumer<AplicacionProvider>(
-        builder: (context, aplicacionProvider, child) {
+      body: Consumer<InstitucionProvider>(
+        builder: (context, institucionProvider, child) {
           return ListView.builder(
-            itemCount: aplicaciones.length,
+            itemCount: instituciones.length,
             itemBuilder: (context, index) {
-              Aplicacion aplicacion = aplicaciones[index];
+              Institucion institucion = instituciones[index];
               return Card(
-                color: const Color.fromARGB(255, 147, 175, 76),
+                color: const Color.fromARGB(255, 92, 39, 176),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
                 margin: const EdgeInsets.all(3),
                 child: ListTile(
                   title: Text(
-                    aplicacion.nombre,
+                    institucion.nombre,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
                   ),
-                  subtitle: Text(aplicacion.descripcion),
+                  subtitle: Text(institucion.descripcion),
                   trailing: SizedBox(
                     width: 60,
                     child: Row(
                       children: [
                         IconButton(
                           color: Colors.black,
-                          onPressed: () => _delete(aplicacion.aplicacionId),
+                          onPressed: () => _delete(institucion.institucionId),
                           icon: const Icon(Icons.delete),
                         ),
                       ],
@@ -240,9 +250,7 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () => _create(),
         child: Icon(Icons.add),
-        //focusColor: miColors.colorMaestroFondo,
         backgroundColor: miColors.colorMaestro,
-        tooltip: "Aregar",
       ),
     );
   }

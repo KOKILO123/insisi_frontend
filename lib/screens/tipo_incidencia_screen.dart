@@ -1,25 +1,29 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:insisi/providers/aplicacion_provider.dart';
-import 'package:insisi/models/aplicacion.dart';
+import 'package:insisi/providers/tipo_incidencia_provider.dart';
+import 'package:insisi/models/tipoIncidencia.dart';
 import 'package:provider/provider.dart';
 import 'package:insisi/util/colors.dart';
 
-class AplicacionesScreen extends StatefulWidget {
+class TipoIncidenciaesScreen extends StatefulWidget {
   @override
-  _AplicacionesScreenState createState() => _AplicacionesScreenState();
+  _TipoIncidenciaesScreenState createState() => _TipoIncidenciaesScreenState();
 }
 
-class _AplicacionesScreenState extends State<AplicacionesScreen> {
+class _TipoIncidenciaesScreenState extends State<TipoIncidenciaesScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descripcionController = TextEditingController();
   final TextEditingController _searchController = TextEditingController();
-  List<Aplicacion> _filteredAplicaciones = [];
+  List<TipoIncidencia> _filteredTipoIncidenciaes = [];
   bool isSearchClicked = false;
+  int? _selectedAplicacionId;
 
   @override
   void initState() {
     super.initState();
+    final tipoIncidenciaProvider = Provider.of<TipoIncidenciaProvider>(context, listen: false);
+    tipoIncidenciaProvider.fetchTipoIncidenciaes(); // Fetch tipoIncidenciaes on init
     final aplicacionProvider = Provider.of<AplicacionProvider>(context, listen: false);
     aplicacionProvider.fetchAplicaciones(); // Fetch aplicaciones on init
     _searchController.addListener(() {
@@ -36,22 +40,22 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
   }
 
   void _onSearchChanged(String value) {
-    final aplicacionProvider = Provider.of<AplicacionProvider>(context, listen: false);
-    final allAplicaciones = aplicacionProvider.aplicaciones;
+    final tipoIncidenciaProvider = Provider.of<TipoIncidenciaProvider>(context, listen: false);
+    final allTipoIncidenciaes = tipoIncidenciaProvider.tipoIncidenciaes;
     setState(() {
       if (value.isEmpty) {
-        _filteredAplicaciones = allAplicaciones;
+        _filteredTipoIncidenciaes = allTipoIncidenciaes;
       } else {
-        _filteredAplicaciones = allAplicaciones
-            .where((aplicacion) => aplicacion.nombre.toLowerCase().contains(value.toLowerCase()))
+        _filteredTipoIncidenciaes = allTipoIncidenciaes
+            .where((tipoIncidencia) => tipoIncidencia.nombre.toLowerCase().contains(value.toLowerCase()))
             .toList();
       }
     });
   }
 
-  Future<void> _delete(int aplicacionId) async {
-    final aplicacionProvider = Provider.of<AplicacionProvider>(context, listen: false);
-    final success = await aplicacionProvider.deleteAplicacion(aplicacionId);
+  Future<void> _delete(int tipoIncidenciaId) async {
+    final tipoIncidenciaProvider = Provider.of<TipoIncidenciaProvider>(context, listen: false);
+    final success = await tipoIncidenciaProvider.deleteTipoIncidencia(tipoIncidenciaId);
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Has eliminado correctamente un elemento")),
@@ -64,16 +68,18 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
     }
   }
 
-  Future<void> _create([Aplicacion? aplicacion]) async {
+  Future<void> _create([TipoIncidencia? tipoIncidencia]) async {
+    final aplicacionProvider = Provider.of<AplicacionProvider>(context, listen: false);
+    final aplicaciones = aplicacionProvider.aplicaciones;
     await showModalBottomSheet(
       isScrollControlled: true,
       context: context,
       builder: (BuildContext ctx) {
         return Padding(
           padding: EdgeInsets.only(
-            top: 20,
-            right: 20,
-            left: 20,
+            top: 10,
+            right: 10,
+            left: 10,
             bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
           ),
           child: Column(
@@ -82,46 +88,61 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
             children: [
               const Center(
                 child: Text(
-                  "Creando Aplicacion",
+                  "Creando TipoIncidencia",
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
+              ),
+              DropdownButton<int>(
+                value: _selectedAplicacionId,
+                onChanged: (int? newValue) {
+                  setState(() {
+                    _selectedAplicacionId = newValue;
+                  });
+                },
+                items: aplicaciones.map<DropdownMenuItem<int>>((aplicacion) {
+                  return DropdownMenuItem<int>(
+                    value: aplicacion.aplicacionId,
+                    child: Text(aplicacion.nombre),
+                  );
+                }).toList(),
+                hint: const Text("Seleccione un área"),
+                isExpanded: true,
               ),
               TextField(
                 controller: _nameController,
                 decoration: const InputDecoration(
                   labelText: 'Nombre',
-                  hintText: 'SIAF',
+                  hintText: 'Nombre',
                 ),
               ),
               TextField(
                 controller: _descripcionController,
                 decoration: const InputDecoration(
                   labelText: 'Descripcion',
-                  hintText: 'Sistema Integrado de Administracion Financiera',
+                  hintText: 'Descripcion',
                 ),
               ),
               const SizedBox(height: 10),
               Center(
-                
                 child: ElevatedButton(
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateColor.resolveWith((states) => Color.fromARGB(255, 243, 146, 146))
-              
+                    backgroundColor: MaterialStateColor.resolveWith((states) => Color.fromARGB(255, 243, 146, 146)),
                   ),
                   onPressed: () async {
                     final String name = _nameController.text;
                     final String descripcion = _descripcionController.text;
 
-                    if (name.isNotEmpty && descripcion.isNotEmpty) {
-                      final newAplicacion = Aplicacion(
-                        aplicacionId: 0, // Placeholder ID, backend should generate
+                    if (name.isNotEmpty && descripcion.isNotEmpty && _selectedAplicacionId != null) {
+                      final newTipoIncidencia = TipoIncidencia(
+                        tipoIncidenciaId: 0,
+                        aplicacionId: _selectedAplicacionId!,
                         nombre: name,
                         descripcion: descripcion,
                         estado: 1, // Default status
                       );
 
-                      final aplicacionProvider = Provider.of<AplicacionProvider>(context, listen: false);
-                      final success = await aplicacionProvider.createAplicacion(newAplicacion);
+                      final tipoIncidenciaProvider = Provider.of<TipoIncidenciaProvider>(context, listen: false);
+                      final success = await tipoIncidenciaProvider.createTipoIncidencia(newTipoIncidencia);
 
                       if (success) {
                         Navigator.of(context).pop();
@@ -151,10 +172,10 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final aplicacionProvider = Provider.of<AplicacionProvider>(context);
-    final aplicaciones = _filteredAplicaciones.isEmpty && _searchController.text.isEmpty
-        ? aplicacionProvider.aplicaciones
-        : _filteredAplicaciones;
+    final tipoIncidenciaProvider = Provider.of<TipoIncidenciaProvider>(context);
+    final tipoIncidenciaes = _filteredTipoIncidenciaes.isEmpty && _searchController.text.isEmpty
+        ? tipoIncidenciaProvider.tipoIncidenciaes
+        : _filteredTipoIncidenciaes;
 
     return Scaffold(
       backgroundColor: miColors.colorMaestroFondo,
@@ -170,7 +191,7 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
             ? Container(
                 height: 40,
                 decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 95, 226, 77),
+                  color: Colors.purple,
                   borderRadius: BorderRadius.circular(20.0),
                 ),
                 child: TextField(
@@ -182,7 +203,7 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
                       hintText: 'Search..'),
                 ),
               )
-            : const Text('Lista Aplicaciones'),
+            : const Text('Lista TipoIncidenciaes'),
         actions: [
           IconButton(
             icon: Icon(isSearchClicked ? Icons.close : Icons.search),
@@ -198,34 +219,34 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
           ),
         ],
       ),
-      body: Consumer<AplicacionProvider>(
-        builder: (context, aplicacionProvider, child) {
+      body: Consumer<TipoIncidenciaProvider>(
+        builder: (context, tipoIncidenciaProvider, child) {
           return ListView.builder(
-            itemCount: aplicaciones.length,
+            itemCount: tipoIncidenciaes.length,
             itemBuilder: (context, index) {
-              Aplicacion aplicacion = aplicaciones[index];
+              TipoIncidencia tipoIncidencia = tipoIncidenciaes[index];
               return Card(
-                color: const Color.fromARGB(255, 147, 175, 76),
+                color: Colors.purple,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
                 margin: const EdgeInsets.all(3),
                 child: ListTile(
                   title: Text(
-                    aplicacion.nombre,
+                    tipoIncidencia.nombre,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
                   ),
-                  subtitle: Text(aplicacion.descripcion),
+                  subtitle: Text(tipoIncidencia.descripcion),
                   trailing: SizedBox(
                     width: 60,
                     child: Row(
                       children: [
                         IconButton(
                           color: Colors.black,
-                          onPressed: () => _delete(aplicacion.aplicacionId),
+                          onPressed: () => _delete(tipoIncidencia.tipoIncidenciaId),
                           icon: const Icon(Icons.delete),
                         ),
                       ],
@@ -240,9 +261,7 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () => _create(),
         child: Icon(Icons.add),
-        //focusColor: miColors.colorMaestroFondo,
         backgroundColor: miColors.colorMaestro,
-        tooltip: "Aregar",
       ),
     );
   }

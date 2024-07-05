@@ -91,8 +91,9 @@ class LoginScreen extends StatelessWidget {
                                     final usuarioProvider = Provider.of<UsuarioProvider>(context, listen: false);
                                     final List<Usuario> usuarios = await usuarioProvider.getUsuario(txtUsuario.text, txtClave.text);
                                     if(usuarios.length==0){
-                                      
+                                      print("entraaaaaaaaaa1111");
                                     }else{
+                                      print("entraaaaaaaa2222222222222");
                                       Navigator.pushReplacementNamed(context, 'home');
                                       print("object");
                                       for (var usuario in usuarios) {

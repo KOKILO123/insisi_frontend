@@ -1,27 +1,27 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:insisi/providers/aplicacion_provider.dart';
-import 'package:insisi/models/aplicacion.dart';
+import 'package:insisi/providers/incidencia_estado_provider.dart';
+import 'package:insisi/models/incidenciaEstado.dart';
 import 'package:provider/provider.dart';
 import 'package:insisi/util/colors.dart';
 
-class AplicacionesScreen extends StatefulWidget {
+class IncidenciaEstadoesScreen extends StatefulWidget {
   @override
-  _AplicacionesScreenState createState() => _AplicacionesScreenState();
+  _IncidenciaEstadoesScreenState createState() => _IncidenciaEstadoesScreenState();
 }
 
-class _AplicacionesScreenState extends State<AplicacionesScreen> {
+class _IncidenciaEstadoesScreenState extends State<IncidenciaEstadoesScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descripcionController = TextEditingController();
   final TextEditingController _searchController = TextEditingController();
-  List<Aplicacion> _filteredAplicaciones = [];
+  List<IncidenciaEstado> _filteredIncidenciaEstadoes = [];
   bool isSearchClicked = false;
 
   @override
   void initState() {
     super.initState();
-    final aplicacionProvider = Provider.of<AplicacionProvider>(context, listen: false);
-    aplicacionProvider.fetchAplicaciones(); // Fetch aplicaciones on init
+    final incidenciaEstadoProvider = Provider.of<IncidenciaEstadoProvider>(context, listen: false);
+    incidenciaEstadoProvider.fetchIncidenciaEstadoes(); // Fetch incidenciaEstadoes on init
     _searchController.addListener(() {
       _onSearchChanged(_searchController.text);
     });
@@ -36,22 +36,22 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
   }
 
   void _onSearchChanged(String value) {
-    final aplicacionProvider = Provider.of<AplicacionProvider>(context, listen: false);
-    final allAplicaciones = aplicacionProvider.aplicaciones;
+    final incidenciaEstadoProvider = Provider.of<IncidenciaEstadoProvider>(context, listen: false);
+    final allIncidenciaEstadoes = incidenciaEstadoProvider.incidenciaEstadoes;
     setState(() {
       if (value.isEmpty) {
-        _filteredAplicaciones = allAplicaciones;
+        _filteredIncidenciaEstadoes = allIncidenciaEstadoes;
       } else {
-        _filteredAplicaciones = allAplicaciones
-            .where((aplicacion) => aplicacion.nombre.toLowerCase().contains(value.toLowerCase()))
+        _filteredIncidenciaEstadoes = allIncidenciaEstadoes
+            .where((incidenciaEstado) => incidenciaEstado.nombre.toLowerCase().contains(value.toLowerCase()))
             .toList();
       }
     });
   }
 
-  Future<void> _delete(int aplicacionId) async {
-    final aplicacionProvider = Provider.of<AplicacionProvider>(context, listen: false);
-    final success = await aplicacionProvider.deleteAplicacion(aplicacionId);
+  Future<void> _delete(int incidenciaEstadoId) async {
+    final incidenciaEstadoProvider = Provider.of<IncidenciaEstadoProvider>(context, listen: false);
+    final success = await incidenciaEstadoProvider.deleteIncidenciaEstado(incidenciaEstadoId);
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Has eliminado correctamente un elemento")),
@@ -64,7 +64,7 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
     }
   }
 
-  Future<void> _create([Aplicacion? aplicacion]) async {
+  Future<void> _create([IncidenciaEstado? incidenciaEstado]) async {
     await showModalBottomSheet(
       isScrollControlled: true,
       context: context,
@@ -82,7 +82,7 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
             children: [
               const Center(
                 child: Text(
-                  "Creando Aplicacion",
+                  "Creando Incidencia Estado",
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -90,14 +90,14 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
                 controller: _nameController,
                 decoration: const InputDecoration(
                   labelText: 'Nombre',
-                  hintText: 'SIAF',
+                  hintText: 'Nombre',
                 ),
               ),
               TextField(
                 controller: _descripcionController,
                 decoration: const InputDecoration(
                   labelText: 'Descripcion',
-                  hintText: 'Sistema Integrado de Administracion Financiera',
+                  hintText: 'Descripcion',
                 ),
               ),
               const SizedBox(height: 10),
@@ -113,15 +113,15 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
                     final String descripcion = _descripcionController.text;
 
                     if (name.isNotEmpty && descripcion.isNotEmpty) {
-                      final newAplicacion = Aplicacion(
-                        aplicacionId: 0, // Placeholder ID, backend should generate
+                      final newIncidenciaEstado = IncidenciaEstado(
+                        incidenciaEstadoId: 0, // Placeholder ID, backend should generate
                         nombre: name,
                         descripcion: descripcion,
                         estado: 1, // Default status
                       );
 
-                      final aplicacionProvider = Provider.of<AplicacionProvider>(context, listen: false);
-                      final success = await aplicacionProvider.createAplicacion(newAplicacion);
+                      final incidenciaEstadoProvider = Provider.of<IncidenciaEstadoProvider>(context, listen: false);
+                      final success = await incidenciaEstadoProvider.createIncidenciaEstado(newIncidenciaEstado);
 
                       if (success) {
                         Navigator.of(context).pop();
@@ -151,10 +151,10 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final aplicacionProvider = Provider.of<AplicacionProvider>(context);
-    final aplicaciones = _filteredAplicaciones.isEmpty && _searchController.text.isEmpty
-        ? aplicacionProvider.aplicaciones
-        : _filteredAplicaciones;
+    final incidenciaEstadoProvider = Provider.of<IncidenciaEstadoProvider>(context);
+    final incidenciaEstadoes = _filteredIncidenciaEstadoes.isEmpty && _searchController.text.isEmpty
+        ? incidenciaEstadoProvider.incidenciaEstadoes
+        : _filteredIncidenciaEstadoes;
 
     return Scaffold(
       backgroundColor: miColors.colorMaestroFondo,
@@ -170,7 +170,7 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
             ? Container(
                 height: 40,
                 decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 95, 226, 77),
+                  color: const Color.fromARGB(255, 94, 94, 90),
                   borderRadius: BorderRadius.circular(20.0),
                 ),
                 child: TextField(
@@ -182,7 +182,7 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
                       hintText: 'Search..'),
                 ),
               )
-            : const Text('Lista Aplicaciones'),
+            : const Text('Lista Incidencia Estados'),
         actions: [
           IconButton(
             icon: Icon(isSearchClicked ? Icons.close : Icons.search),
@@ -198,34 +198,34 @@ class _AplicacionesScreenState extends State<AplicacionesScreen> {
           ),
         ],
       ),
-      body: Consumer<AplicacionProvider>(
-        builder: (context, aplicacionProvider, child) {
+      body: Consumer<IncidenciaEstadoProvider>(
+        builder: (context, incidenciaEstadoProvider, child) {
           return ListView.builder(
-            itemCount: aplicaciones.length,
+            itemCount: incidenciaEstadoes.length,
             itemBuilder: (context, index) {
-              Aplicacion aplicacion = aplicaciones[index];
+              IncidenciaEstado incidenciaEstado = incidenciaEstadoes[index];
               return Card(
-                color: const Color.fromARGB(255, 147, 175, 76),
+                color: const Color.fromARGB(255, 94, 94, 90),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
                 margin: const EdgeInsets.all(3),
                 child: ListTile(
                   title: Text(
-                    aplicacion.nombre,
+                    incidenciaEstado.nombre,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
                   ),
-                  subtitle: Text(aplicacion.descripcion),
+                  subtitle: Text(incidenciaEstado.descripcion),
                   trailing: SizedBox(
                     width: 60,
                     child: Row(
                       children: [
                         IconButton(
                           color: Colors.black,
-                          onPressed: () => _delete(aplicacion.aplicacionId),
+                          onPressed: () => _delete(incidenciaEstado.incidenciaEstadoId),
                           icon: const Icon(Icons.delete),
                         ),
                       ],

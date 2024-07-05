@@ -1,18 +1,21 @@
-class Aplicacion {
+class TipoIncidencia {
+  final int tipoIncidenciaId;
   final int aplicacionId;
   final String nombre;
   final String descripcion;
   final int estado;
 
-  Aplicacion({
+  TipoIncidencia({
+    required this.tipoIncidenciaId,
     required this.aplicacionId,
     required this.nombre,
     required this.descripcion,
     required this.estado,
   });
 
-  factory Aplicacion.fromJson(Map<String, dynamic> json) {
-    return Aplicacion(
+  factory TipoIncidencia.fromJson(Map<String, dynamic> json) {
+    return TipoIncidencia(
+      tipoIncidenciaId: json['tipoIncidenciaId'],
       aplicacionId: json['aplicacionId'],
       nombre: json['nombre'],
       descripcion: json['descripcion'],
@@ -22,6 +25,7 @@ class Aplicacion {
 
   Map<String, dynamic> toJson() {
     return {
+      'aplicacionId': aplicacionId,
       'nombre': nombre,
       'descripcion': descripcion,
       'estado': estado,

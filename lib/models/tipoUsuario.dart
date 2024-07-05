@@ -1,19 +1,19 @@
-class Aplicacion {
-  final int aplicacionId;
+class TipoUsuario {
+  final int tipoUsuarioId;
   final String nombre;
   final String descripcion;
   final int estado;
 
-  Aplicacion({
-    required this.aplicacionId,
+  TipoUsuario({
+    required this.tipoUsuarioId,
     required this.nombre,
     required this.descripcion,
     required this.estado,
   });
 
-  factory Aplicacion.fromJson(Map<String, dynamic> json) {
-    return Aplicacion(
-      aplicacionId: json['aplicacionId'],
+  factory TipoUsuario.fromJson(Map<String, dynamic> json) {
+    return TipoUsuario(
+      tipoUsuarioId: json['tipoUsuarioId'],
       nombre: json['nombre'],
       descripcion: json['descripcion'],
       estado: json['estado'],
