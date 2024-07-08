@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:insisi/screens/area_screen.dart';
 import 'package:insisi/screens/incidencia_estado_screen.dart';
+import 'package:insisi/screens/incidencia_screen.dart';
 import 'package:insisi/screens/institucion_screen.dart';
 import 'package:insisi/screens/prioridad_screen.dart';
 import 'package:insisi/screens/tipo_incidencia_screen.dart';
@@ -44,7 +45,7 @@ class InfoCard extends StatelessWidget {
               
                 switch (id) {
                   case '1':
-                    return DetailScreen(title: title, value: value, id: id, color: color);
+                    return IncidenciasScreen();
                   case '2':
                     return UsuariosScreen(); 
                   case '3':
